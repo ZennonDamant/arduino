@@ -132,7 +132,7 @@ void GlowPlugs()
 /// <param name="boost">The boost (in PSI).</param>
 void DutyCycle(int rpm, float boost)
 {
-    //Calculate & set duty cycle
+    // Calculate & set duty cycle
     int dutyCycle = GetInterpolatedDutyCycle(rpm, boost);
     analogWrite(TIMING_OUTPUT_PIN, dutyCycle);
 }
@@ -145,10 +145,10 @@ int GetRpm()
 {
     const long TimeOut = 100000; //in microseconds
 
-    //Get time signal stays high (in microseconds)
+    // Get time signal stays high (in microseconds)
     float pulseWidth = pulseIn(PULSE_INPUT_PIN, HIGH, TimeOut);
 
-    //Calculate RPM
+    // Calculate RPM
     int rpm = ((1000000 / (pulseWidth)) * 20);
 
     return rpm;
@@ -240,7 +240,7 @@ void GetRpmRange(int rpm)
         upperRpm = 3900;
     }
 
-    //Validate
+    // Validate
     if (lowerRpmIndex < 0) lowerRpmIndex = 0;
     if (upperRpmIndex > MAX_RPM_POINTS - 1) upperRpmIndex = MAX_RPM_POINTS - 1;
     if (lowerRpm < 0) lowerRpm = 0;
