@@ -9,7 +9,7 @@
 //=====================================================================================================================
 // Global Constants
 //=====================================================================================================================
-const long SERIAL_SPEED = 9600;                 // Serial speed in bits per second
+const long SERIAL_SPEED = 9600;                 // Serial speed (bits per second)
 
 const int MAX_RPM = 3900;                       // if this is changed will also have to update "DUTY_CYCLES_TABLE"
 const int MAX_BOOST = 14;                       // if this is changed will also have to update "DUTY_CYCLES_TABLE"
