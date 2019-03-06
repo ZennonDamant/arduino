@@ -9,12 +9,12 @@
 //=====================================================================================================================
 // Global Constants
 //=====================================================================================================================
-const long SERIAL_SPEED = 9600;                 //Serial speed in bits per second
+const long SERIAL_SPEED = 9600;                 // Serial speed in bits per second
 
-const int MAX_RPM = 3900;                       //if this is changed will also have to update "DUTY_CYCLES_TABLE"
-const int MAX_BOOST = 14;                       //if this is changed will also have to update "DUTY_CYCLES_TABLE"
-const int MAX_RPM_POINTS = 12;                  //if this is changed will also have to update "DUTY_CYCLES_TABLE"
-const int MAX_BOOST_POINTS = MAX_BOOST + 1;     //Need one extra spot in the array for 0psi
+const int MAX_RPM = 3900;                       // if this is changed will also have to update "DUTY_CYCLES_TABLE"
+const int MAX_BOOST = 14;                       // if this is changed will also have to update "DUTY_CYCLES_TABLE"
+const int MAX_RPM_POINTS = 12;                  // if this is changed will also have to update "DUTY_CYCLES_TABLE"
+const int MAX_BOOST_POINTS = MAX_BOOST + 1;     // Need one extra spot in the array for 0psi
 const int DUTY_CYCLES_TABLE[MAX_BOOST_POINTS][MAX_RPM_POINTS] =
 {
 	//  0    1    2    3    4    5    6    7    8    9   10   11  rpmIndex
@@ -36,27 +36,27 @@ const int DUTY_CYCLES_TABLE[MAX_BOOST_POINTS][MAX_RPM_POINTS] =
 	{ 0,   0,   0,   0,   0,   0,   0,    0,   0,   0,    0,   0 },      // 14 psi
 };
 
-const long GLOW_PLUG_TIMEOUT = 18000;           //Glow plug time-out (ie how long they should be on for)
+const long GLOW_PLUG_TIMEOUT = 18000;           // Glow plug time-out (ie how long they should be on for)
 
-const int TIMING_OUTPUT_PIN = 3;                //timing control valve output pin
-const int PULSE_INPUT_PIN = 5;                  //ECU frequency RPM input pin
-const int GLOW_CONTROL_PIN = 8;                 //Glow glowplugs if ECU grounds digital pin 8
-const int WATER_LEVEL_SAFETY_SWITCH_PIN = 10;   //water level safety switch
-const int WATER_INJECTION_PUMP_PIN = 11;        //PWM control for water/meth injection pump
-const int GLOW_RELAY_OUTPUT_PIN = 12;           //glow plug relay output pin
+const int TIMING_OUTPUT_PIN = 3;                // timing control valve output pin
+const int PULSE_INPUT_PIN = 5;                  // ECU frequency RPM input pin
+const int GLOW_CONTROL_PIN = 8;                 // Glow glowplugs if ECU grounds digital pin 8
+const int WATER_LEVEL_SAFETY_SWITCH_PIN = 10;   // water level safety switch
+const int WATER_INJECTION_PUMP_PIN = 11;        // PWM control for water/meth injection pump
+const int GLOW_RELAY_OUTPUT_PIN = 12;           // glow plug relay output pin
 
-const int MIN_ANALOG_WRITE_VALUE = 0;           //Used for duty cycle and PWM validation
-const int MAX_ANALOG_WRITE_VALUE = 255;         //Used for duty cycle and PWM validation
+const int MIN_ANALOG_WRITE_VALUE = 0;           // Used for duty cycle and PWM validation
+const int MAX_ANALOG_WRITE_VALUE = 255;         // Used for duty cycle and PWM validation
 
 
 
 //=====================================================================================================================
 // Global Variables
 //=====================================================================================================================
-int lowerRpm = -1;                              //lower bound for current RPM value - used for interpolation
-int upperRpm = -1;                              //upper bound for current RPM value - used for interpolation
-int lowerRpmIndex = -1;                         //index of above lower bound - used for lookup
-int upperRpmIndex = -1;                         //index of above upper bound - used for lookup
+int lowerRpm = -1;                              // lower bound for current RPM value - used for interpolation
+int upperRpm = -1;                              // upper bound for current RPM value - used for interpolation
+int lowerRpmIndex = -1;                         // index of above lower bound - used for lookup
+int upperRpmIndex = -1;                         // index of above upper bound - used for lookup
 
 
 
@@ -69,14 +69,14 @@ int upperRpmIndex = -1;                         //index of above upper bound - u
 /// </summary>
 void setup()
 {
-	Serial.begin(SERIAL_SPEED);
+    Serial.begin(SERIAL_SPEED);
 
-	pinMode(PULSE_INPUT_PIN, INPUT);
-	pinMode(TIMING_OUTPUT_PIN, OUTPUT);
-	pinMode(GLOW_RELAY_OUTPUT_PIN, OUTPUT);
+    pinMode(PULSE_INPUT_PIN, INPUT);
+    pinMode(TIMING_OUTPUT_PIN, OUTPUT);
+    pinMode(GLOW_RELAY_OUTPUT_PIN, OUTPUT);
     
-	pinMode(A1, INPUT);
-	pinMode(8, INPUT_PULLUP);
+    pinMode(A1, INPUT);
+    pinMode(8, INPUT_PULLUP);
     
     pinMode(WATER_INJECTION_PUMP_PIN, OUTPUT);
     pinMode(WATER_LEVEL_SAFETY_SWITCH_PIN, INPUT_PULLUP);
@@ -88,11 +88,11 @@ void setup()
 void loop()
 {
     // Enable/disable glow plugs as needed
-	GlowPlugs();
+    GlowPlugs();
     
     // Get boost & RPM
-	int rpm = GetRpm();
-	float boost = GetBoost();
+    int rpm = GetRpm();
+    float boost = GetBoost();
     
     // Calculate and set duty cycle
     DutyCycle(rpm, boost);
@@ -100,8 +100,8 @@ void loop()
     // Perform Water Injection
     WaterInjection(rpm, boost);
 
-	// Sleep for 2 milliseconds
-	delay(2);
+    // Sleep for 2 milliseconds
+    delay(2);
 }
 
 
@@ -115,18 +115,18 @@ void loop()
 /// </summary>
 void GlowPlugs()
 {
-	//Glow plugs run for GLOW_PLUG_TIMEOUT milliseconds from startup if ecu grounds digital pin 8
-	int glowControl = digitalRead(GLOW_CONTROL_PIN);
-	long glowTimeOut = millis();
+    //Glow plugs run for GLOW_PLUG_TIMEOUT milliseconds from startup if ecu grounds digital pin 8
+    int glowControl = digitalRead(GLOW_CONTROL_PIN);
+    long glowTimeOut = millis();
 
-	if ((glowControl == 0) && (glowTimeOut <= GLOW_PLUG_TIMEOUT))
-	{
-		digitalWrite(GLOW_RELAY_OUTPUT_PIN, HIGH);
-	}
-	else
-	{
-		digitalWrite(GLOW_RELAY_OUTPUT_PIN, LOW);
-	}
+    if ((glowControl == 0) && (glowTimeOut <= GLOW_PLUG_TIMEOUT))
+    {
+        digitalWrite(GLOW_RELAY_OUTPUT_PIN, HIGH);
+    }
+    else
+    {
+        digitalWrite(GLOW_RELAY_OUTPUT_PIN, LOW);
+    }
 }
 
 /// <summary>
@@ -136,7 +136,7 @@ void GlowPlugs()
 /// <param name="boost">The boost (in PSI).</param>
 void DutyCycle(int rpm, float boost)
 {
-	//Calculate & set duty cycle
+    //Calculate & set duty cycle
     int dutyCycle = GetInterpolatedDutyCycle(rpm, boost);
     analogWrite(TIMING_OUTPUT_PIN, dutyCycle);
 }
@@ -147,15 +147,15 @@ void DutyCycle(int rpm, float boost)
 /// <returns>The engine RPM</returns>
 int GetRpm()
 {
-	const long TimeOut = 100000; //in microseconds
+    const long TimeOut = 100000; //in microseconds
 
-	//Get time signal stays high (in microseconds)
-	float pulseWidth = pulseIn(PULSE_INPUT_PIN, HIGH, TimeOut);
+    //Get time signal stays high (in microseconds)
+    float pulseWidth = pulseIn(PULSE_INPUT_PIN, HIGH, TimeOut);
 
     //Calculate RPM
-	int rpm = ((1000000 / (pulseWidth)) * 20);
+    int rpm = ((1000000 / (pulseWidth)) * 20);
 
-	return rpm;
+    return rpm;
 }
 
 /// <summary>
@@ -166,89 +166,89 @@ int GetRpm()
 /// <param name="rpm">The actual RPM.</param>
 void GetRpmRange(int rpm)
 {
-	if (rpm < 900)
-	{
-		lowerRpmIndex = 0;
-		upperRpmIndex = 1;
-		lowerRpm = 600;
-		upperRpm = 900;
-	}
-	else if (rpm >= 900 && rpm < 1200)
-	{
-		lowerRpmIndex = 1;
-		upperRpmIndex = 2;
-		lowerRpm = 900;
-		upperRpm = 1200;
-	}
-	else if (rpm >= 1200 && rpm < 1500)
-	{
-		lowerRpmIndex = 2;
-		upperRpmIndex = 3;
-		lowerRpm = 1200;
-		upperRpm = 1500;
-	}
-	else if (rpm >= 1500 && rpm < 1800)
-	{
-		lowerRpmIndex = 3;
-		upperRpmIndex = 4;
-		lowerRpm = 1500;
-		upperRpm = 1800;
-	}
-	else if (rpm >= 1800 && rpm < 2100)
-	{
-		lowerRpmIndex = 4;
-		upperRpmIndex = 5;
-		lowerRpm = 1800;
-		upperRpm = 2100;
-	}
-	else if (rpm >= 2100 && rpm < 2400)
-	{
-		lowerRpmIndex = 5;
-		upperRpmIndex = 6;
-		lowerRpm = 2100;
-		upperRpm = 2400;
-	}
-	else if (rpm >= 2400 && rpm < 2700)
-	{
-		lowerRpmIndex = 6;
-		upperRpmIndex = 7;
-		lowerRpm = 2400;
-		upperRpm = 2700;
-	}
-	else if (rpm >= 2700 && rpm < 3000)
-	{
-		lowerRpmIndex = 7;
-		upperRpmIndex = 8;
-		lowerRpm = 2700;
-		upperRpm = 3000;
-	}
-	else if (rpm >= 3000 && rpm < 3300)
-	{
-		lowerRpmIndex = 8;
-		upperRpmIndex = 9;
-		lowerRpm = 3000;
-		upperRpm = 3300;
-	}
-	else if (rpm >= 3300 && rpm < 3600)
-	{
-		lowerRpmIndex = 9;
-		upperRpmIndex = 10;
-		lowerRpm = 3300;
-		upperRpm = 3600;
-	}
-	else
-	{
-		lowerRpmIndex = 10;
-		upperRpmIndex = 11;
-		lowerRpm = 3600;
-		upperRpm = 3900;
-	}
+    if (rpm < 900)
+    {
+        lowerRpmIndex = 0;
+        upperRpmIndex = 1;
+        lowerRpm = 600;
+        upperRpm = 900;
+    }
+    else if (rpm >= 900 && rpm < 1200)
+    {
+        lowerRpmIndex = 1;
+        upperRpmIndex = 2;
+        lowerRpm = 900;
+        upperRpm = 1200;
+    }
+    else if (rpm >= 1200 && rpm < 1500)
+    {
+        lowerRpmIndex = 2;
+        upperRpmIndex = 3;
+        lowerRpm = 1200;
+        upperRpm = 1500;
+    }
+    else if (rpm >= 1500 && rpm < 1800)
+    {
+        lowerRpmIndex = 3;
+        upperRpmIndex = 4;
+        lowerRpm = 1500;
+        upperRpm = 1800;
+    }
+    else if (rpm >= 1800 && rpm < 2100)
+    {
+        lowerRpmIndex = 4;
+        upperRpmIndex = 5;
+        lowerRpm = 1800;
+        upperRpm = 2100;
+    }
+    else if (rpm >= 2100 && rpm < 2400)
+    {
+        lowerRpmIndex = 5;
+        upperRpmIndex = 6;
+        lowerRpm = 2100;
+        upperRpm = 2400;
+    }
+    else if (rpm >= 2400 && rpm < 2700)
+    {
+        lowerRpmIndex = 6;
+        upperRpmIndex = 7;
+        lowerRpm = 2400;
+        upperRpm = 2700;
+    }
+    else if (rpm >= 2700 && rpm < 3000)
+    {
+        lowerRpmIndex = 7;
+        upperRpmIndex = 8;
+        lowerRpm = 2700;
+        upperRpm = 3000;
+    }
+    else if (rpm >= 3000 && rpm < 3300)
+    {
+        lowerRpmIndex = 8;
+        upperRpmIndex = 9;
+        lowerRpm = 3000;
+        upperRpm = 3300;
+    }
+    else if (rpm >= 3300 && rpm < 3600)
+    {
+        lowerRpmIndex = 9;
+        upperRpmIndex = 10;
+        lowerRpm = 3300;
+        upperRpm = 3600;
+    }
+    else
+    {
+        lowerRpmIndex = 10;
+        upperRpmIndex = 11;
+        lowerRpm = 3600;
+        upperRpm = 3900;
+    }
 
-	//Validate
-	if (lowerRpmIndex < 0) lowerRpmIndex = 0;
-	if (upperRpmIndex > MAX_RPM_POINTS - 1) upperRpmIndex = MAX_RPM_POINTS - 1;
+    //Validate
+    if (lowerRpmIndex < 0) lowerRpmIndex = 0;
+    if (upperRpmIndex > MAX_RPM_POINTS - 1) upperRpmIndex = MAX_RPM_POINTS - 1;
     if (lowerRpm < 0) lowerRpm = 0;
-	if (upperRpm > MAX_RPM) upperRpm = MAX_RPM;
+    if (upperRpm > MAX_RPM) upperRpm = MAX_RPM;
 }
 
 /// <summary>
@@ -260,27 +260,27 @@ void GetRpmRange(int rpm)
 /// <returns>The duty cycle. Number between 0 (always off) and 255 (always on).</returns>
 int GetInterpolatedDutyCycle(int rpm, int boost)
 {
-	//Get the RPM range (including indices)
-	GetRpmRange(rpm);
+    // Get the RPM range (including indices)
+    GetRpmRange(rpm);
 
-	//Get boost index
-	int roundedBoost = GetRoundedBoost(boost);
-	int boostIndex = GetBoostIndex(roundedBoost);
+    // Get boost index
+    int roundedBoost = GetRoundedBoost(boost);
+    int boostIndex = GetBoostIndex(roundedBoost);
 
-	//Lookup upper and lower duty cycles using boost and RPM indices
-	int lowerDutyCycle = DUTY_CYCLES_TABLE[boostIndex][lowerRpmIndex];
-	int upperDutyCycle = DUTY_CYCLES_TABLE[boostIndex][upperRpmIndex];
+    // Lookup upper and lower duty cycles using boost and RPM indices
+    int lowerDutyCycle = DUTY_CYCLES_TABLE[boostIndex][lowerRpmIndex];
+    int upperDutyCycle = DUTY_CYCLES_TABLE[boostIndex][upperRpmIndex];
     
-    //Validate
-	if (lowerDutyCycle < MIN_ANALOG_WRITE_VALUE) lowerDutyCycle = MIN_ANALOG_WRITE_VALUE;
-	if (lowerDutyCycle > MAX_ANALOG_WRITE_VALUE) lowerDutyCycle = MAX_ANALOG_WRITE_VALUE;
-	if (upperDutyCycle < MIN_ANALOG_WRITE_VALUE) upperDutyCycle = MIN_ANALOG_WRITE_VALUE;
-	if (upperDutyCycle > MAX_ANALOG_WRITE_VALUE) upperDutyCycle = MAX_ANALOG_WRITE_VALUE;
+    // Validate
+    if (lowerDutyCycle < MIN_ANALOG_WRITE_VALUE) lowerDutyCycle = MIN_ANALOG_WRITE_VALUE;
+    if (lowerDutyCycle > MAX_ANALOG_WRITE_VALUE) lowerDutyCycle = MAX_ANALOG_WRITE_VALUE;
+    if (upperDutyCycle < MIN_ANALOG_WRITE_VALUE) upperDutyCycle = MIN_ANALOG_WRITE_VALUE;
+    if (upperDutyCycle > MAX_ANALOG_WRITE_VALUE) upperDutyCycle = MAX_ANALOG_WRITE_VALUE;
 
-	//Use linear interpolation to calculate duty cycle to return
-	int interpolatedDutyCycle = InterpolateInts(rpm, lowerRpm, upperRpm, lowerDutyCycle, upperDutyCycle);
+    // Use linear interpolation to calculate duty cycle to return
+    int interpolatedDutyCycle = InterpolateInts(rpm, lowerRpm, upperRpm, lowerDutyCycle, upperDutyCycle);
     
-	return interpolatedDutyCycle;
+    return interpolatedDutyCycle;
 }
 
 /// <summary>
@@ -305,13 +305,13 @@ int InterpolateInts(int X, int x0, int x1, int y0, int y1)
 /// <returns>The boost.</returns>
 float GetBoost()
 {
-	float mapValue = analogRead(A1);
-	float boost = ((mapValue * 0.004887586) - 1.00) / 0.064;    //in PSI
+    float mapValue = analogRead(A1);
+    float boost = ((mapValue * 0.004887586) - 1.00) / 0.064;    //in PSI
     
-    //Validate
-	if (boost < 0) boost = 0;
+    // Validate
+    if (boost < 0) boost = 0;
     
-	return boost;
+    return boost;
 }
 
 /// <summary>
@@ -321,14 +321,14 @@ float GetBoost()
 /// <returns>The rounded boost.</returns>
 int GetRoundedBoost(float boost)
 {
-	//Round to nearest whole number
-	int roundedBoost = int(round(boost));
+    // Round to nearest whole number
+    int roundedBoost = int(round(boost));
 
-	//Validate
-	if (roundedBoost < 0) roundedBoost = 0;
-	if (roundedBoost > MAX_BOOST) roundedBoost = MAX_BOOST;
+    // Validate
+    if (roundedBoost < 0) roundedBoost = 0;
+    if (roundedBoost > MAX_BOOST) roundedBoost = MAX_BOOST;
 
-	return roundedBoost;
+    return roundedBoost;
 }
 
 /// <summary>
@@ -338,18 +338,18 @@ int GetRoundedBoost(float boost)
 /// <returns>The boost index.</returns>
 int GetBoostIndex(int roundedBoost)
 {
-	//Since our roundedBoost values match boostIndex values this is easy
-	int boostIndex = roundedBoost;
+    // Since our roundedBoost values match boostIndex values this is easy
+    int boostIndex = roundedBoost;
 
-	// Note: If we change the boost values in the DUTY_CYCLES_TABLE
-	// (so they don't start at 0 and go up in increments of 1)
-	// then we'll need to do a proper lookup here.
+    // Note: If we change the boost values in the DUTY_CYCLES_TABLE
+    // (so they don't start at 0 and go up in increments of 1)
+    // then we'll need to do a proper lookup here.
 
-	//Validate
-	if (boostIndex < 0) boostIndex = 0;
-	if (boostIndex > MAX_BOOST_POINTS - 1) boostIndex = MAX_BOOST_POINTS - 1;
+    // Validate
+    if (boostIndex < 0) boostIndex = 0;
+    if (boostIndex > MAX_BOOST_POINTS - 1) boostIndex = MAX_BOOST_POINTS - 1;
 
-	return boostIndex;
+    return boostIndex;
 }
 
 /// <summary>
@@ -395,9 +395,9 @@ int GetInterpolatedPwm(float boost)
         interpolatedPwm = 255;
     }
     
-    //Validate
-	if (interpolatedPwm < MIN_ANALOG_WRITE_VALUE) interpolatedPwm = MIN_ANALOG_WRITE_VALUE;
-	if (interpolatedPwm > MAX_ANALOG_WRITE_VALUE) interpolatedPwm = MAX_ANALOG_WRITE_VALUE;
+    // Validate
+    if (interpolatedPwm < MIN_ANALOG_WRITE_VALUE) interpolatedPwm = MIN_ANALOG_WRITE_VALUE;
+    if (interpolatedPwm > MAX_ANALOG_WRITE_VALUE) interpolatedPwm = MAX_ANALOG_WRITE_VALUE;
     
     return interpolatedPwm;
 }
@@ -417,4 +417,3 @@ int InterpolateFloats(float X, float x0, float x1, int y0, int y1)
     int interpolatedInt = (int)(round(interpolatedFloat));
     return interpolatedInt;
 }
-
