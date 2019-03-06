@@ -1,5 +1,5 @@
 //=====================================================================================================================
-// Code for Ardinuio board - for Patrol 4.2TD ECU
+// Code for the Ardinuio in Honeymans TD42TI GU Patrol
 //=====================================================================================================================
 // Date written: August 2014
 // Authors: SevenAngryPenguins & ZENNON
