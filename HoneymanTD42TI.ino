@@ -14,7 +14,7 @@ const long SERIAL_SPEED = 9600;                 // Serial speed (bits per second
 const int MAX_RPM = 3900;                       // if this is changed will also have to update "DUTY_CYCLES_TABLE"
 const int MAX_BOOST = 14;                       // if this is changed will also have to update "DUTY_CYCLES_TABLE"
 const int MAX_RPM_POINTS = 12;                  // if this is changed will also have to update "DUTY_CYCLES_TABLE"
-const int MAX_BOOST_POINTS = MAX_BOOST + 1;     // Need one extra spot in the array for 0psi
+const int MAX_BOOST_POINTS = MAX_BOOST + 1;     // if this is changed will also have to update "DUTY_CYCLES_TABLE"
 const int DUTY_CYCLES_TABLE[MAX_BOOST_POINTS][MAX_RPM_POINTS] =
 {
     //  0    1    2    3    4    5    6    7    8    9   10   11  rpmIndex
