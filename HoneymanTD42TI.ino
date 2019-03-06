@@ -111,11 +111,11 @@ void loop()
 /// </summary>
 void GlowPlugs()
 {
-    //Glow plugs run for GLOW_PLUG_TIMEOUT milliseconds from startup if ecu grounds digital pin 8
+    // Glow plugs run for GLOW_PLUG_TIMEOUT milliseconds from startup if ecu grounds digital pin 8
     int glowControl = digitalRead(GLOW_CONTROL_PIN);
-    long glowTimeOut = millis();
+    long runningTime = millis();
 
-    if ((glowControl == 0) && (glowTimeOut <= GLOW_PLUG_TIMEOUT))
+    if ((glowControl == 0) && (runningTime <= GLOW_PLUG_TIMEOUT))
     {
         digitalWrite(GLOW_RELAY_OUTPUT_PIN, HIGH);
     }
