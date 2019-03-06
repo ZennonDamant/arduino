@@ -5,11 +5,22 @@
 // Authors: SevenAngryPenguins & ZENNON
 
 
-
 //=====================================================================================================================
 // Global Constants
 //=====================================================================================================================
 const long SERIAL_SPEED = 9600;                 // Serial speed (bits per second)
+
+const long GLOW_PLUG_TIMEOUT = 18000;           // Glow plug time-out (ie how long they should be on for)
+
+const int TIMING_OUTPUT_PIN = 3;                // timing control valve output pin
+const int PULSE_INPUT_PIN = 5;                  // ECU frequency RPM input pin
+const int GLOW_CONTROL_PIN = 8;                 // Glow glowplugs if ECU grounds digital pin 8
+const int WATER_LEVEL_SAFETY_SWITCH_PIN = 10;   // water level safety switch
+const int WATER_INJECTION_PUMP_PIN = 11;        // PWM control for water/meth injection pump
+const int GLOW_RELAY_OUTPUT_PIN = 12;           // glow plug relay output pin
+
+const int MIN_ANALOG_WRITE_VALUE = 0;           // Used for duty cycle and PWM validation
+const int MAX_ANALOG_WRITE_VALUE = 255;         // Used for duty cycle and PWM validation
 
 const int MAX_RPM = 3900;                       // if this is changed will also have to update "DUTY_CYCLES_TABLE"
 const int MAX_BOOST = 14;                       // if this is changed will also have to update "DUTY_CYCLES_TABLE"
@@ -36,19 +47,6 @@ const int DUTY_CYCLES_TABLE[MAX_BOOST_POINTS][MAX_RPM_POINTS] =
     { 0,   0,   0,   0,   0,   0,   0,    0,   0,   0,    0,   0 },      // 14 psi
 };
 
-const long GLOW_PLUG_TIMEOUT = 18000;           // Glow plug time-out (ie how long they should be on for)
-
-const int TIMING_OUTPUT_PIN = 3;                // timing control valve output pin
-const int PULSE_INPUT_PIN = 5;                  // ECU frequency RPM input pin
-const int GLOW_CONTROL_PIN = 8;                 // Glow glowplugs if ECU grounds digital pin 8
-const int WATER_LEVEL_SAFETY_SWITCH_PIN = 10;   // water level safety switch
-const int WATER_INJECTION_PUMP_PIN = 11;        // PWM control for water/meth injection pump
-const int GLOW_RELAY_OUTPUT_PIN = 12;           // glow plug relay output pin
-
-const int MIN_ANALOG_WRITE_VALUE = 0;           // Used for duty cycle and PWM validation
-const int MAX_ANALOG_WRITE_VALUE = 255;         // Used for duty cycle and PWM validation
-
-
 
 //=====================================================================================================================
 // Global Variables
@@ -57,7 +55,6 @@ int lowerRpm = -1;                              // lower bound for current RPM v
 int upperRpm = -1;                              // upper bound for current RPM value - used for interpolation
 int lowerRpmIndex = -1;                         // index of above lower bound - used for lookup
 int upperRpmIndex = -1;                         // index of above upper bound - used for lookup
-
 
 
 //=====================================================================================================================
@@ -103,7 +100,6 @@ void loop()
     // Sleep for 2 milliseconds
     delay(2);
 }
-
 
 
 //=====================================================================================================================
