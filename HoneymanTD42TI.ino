@@ -115,7 +115,7 @@ void GlowPlugs()
     int glowControl = digitalRead(GLOW_CONTROL_PIN);
     long runningTime = millis();
 
-    if ((glowControl == 0) && (runningTime <= GLOW_PLUG_TIMEOUT))
+    if ((glowControl == LOW) && (runningTime <= GLOW_PLUG_TIMEOUT))
     {
         digitalWrite(GLOW_RELAY_OUTPUT_PIN, HIGH);
     }
